@@ -1,8 +1,10 @@
 import { Elysia, t } from 'elysia';
 import { db } from './db/db';
 import { users } from './db/schema';
+import { usersRoute } from './routes/users-route';
 
 const app = new Elysia()
+  .use(usersRoute)
   .get('/', () => ({ message: 'Welcome to Elysia + Drizzle + MySQL API!' }))
   .get('/users', async () => {
     try {
@@ -11,22 +13,6 @@ const app = new Elysia()
     } catch (error: any) {
       return { success: false, error: error.message };
     }
-  })
-  .post('/users', async ({ body }) => {
-    try {
-      await db.insert(users).values({
-        name: body.name,
-        email: body.email,
-      });
-      return { success: true, message: 'User created successfully' };
-    } catch (error: any) {
-      return { success: false, error: error.message };
-    }
-  }, {
-    body: t.Object({
-      name: t.String(),
-      email: t.String({ format: 'email' }),
-    })
   })
   .listen(3000);
 
