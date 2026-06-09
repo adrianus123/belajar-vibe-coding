@@ -60,8 +60,12 @@ export const usersRoute = new Elysia({ prefix: '/api' })
         }
       };
     } catch (error: any) {
-      set.status = 401;
-      return { error: 'Unauthorized' };
+      if (error.message === 'Unauthorized') {
+        set.status = 401;
+        return { error: 'Unauthorized' };
+      }
+      set.status = 500;
+      return { error: 'Internal Server Error' };
     }
   })
   .delete('/users/logout', async ({ headers, set }) => {
@@ -77,8 +81,12 @@ export const usersRoute = new Elysia({ prefix: '/api' })
       await logoutUser(token);
       return { data: 'OK' };
     } catch (error: any) {
-      set.status = 401;
-      return { error: 'Unauthorized' };
+      if (error.message === 'Unauthorized') {
+        set.status = 401;
+        return { error: 'Unauthorized' };
+      }
+      set.status = 500;
+      return { error: 'Internal Server Error' };
     }
   });
 
