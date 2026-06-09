@@ -15,6 +15,13 @@
       "when": 1780975465169,
       "tag": "0001_heavy_avengers",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1780977558233,
+      "tag": "0002_careless_maestro",
+      "breakpoints": true
     }
   ]
 }
