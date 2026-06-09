@@ -3,7 +3,7 @@ import { db } from './db/db';
 import { users } from './db/schema';
 import { usersRoute } from './routes/users-route';
 
-const app = new Elysia()
+export const app = new Elysia()
   .use(usersRoute)
   .get('/', () => ({ message: 'Welcome to Elysia + Drizzle + MySQL API!' }))
   .get('/users', async () => {
@@ -13,9 +13,12 @@ const app = new Elysia()
     } catch (error: any) {
       return { success: false, error: error.message };
     }
-  })
-  .listen(3000);
+  });
 
-console.log(
-  `🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port}`
-);
+if (process.env.NODE_ENV !== 'test') {
+  app.listen(3000);
+  console.log(
+    `🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port}`
+  );
+}
+
