@@ -17,10 +17,25 @@ export const usersRoute = new Elysia({ prefix: '/api' })
     }
   }, {
     body: t.Object({
-      name: t.String({ minLength: 1, maxLength: 255 }),
-      email: t.String({ format: 'email' }),
-      password: t.String({ minLength: 6 })
-    })
+      name: t.String({ minLength: 1, maxLength: 255, default: 'John Doe' }),
+      email: t.String({ format: 'email', default: 'john@example.com' }),
+      password: t.String({ minLength: 6, default: 'password123' })
+    }),
+    response: {
+      201: t.Object({
+        data: t.String({ default: 'OK' })
+      }),
+      400: t.Object({
+        error: t.String({ default: 'Email sudah terdaftar' })
+      }),
+      500: t.Object({
+        error: t.String({ default: 'Internal Server Error' })
+      })
+    },
+    detail: {
+      summary: 'Registrasi Pengguna Baru',
+      tags: ['Users']
+    }
   })
   .post('/users/login', async ({ body, set }) => {
     try {
@@ -36,9 +51,24 @@ export const usersRoute = new Elysia({ prefix: '/api' })
     }
   }, {
     body: t.Object({
-      email: t.String({ format: 'email' }),
-      password: t.String({ minLength: 1 })
-    })
+      email: t.String({ format: 'email', default: 'john@example.com' }),
+      password: t.String({ minLength: 1, default: 'password123' })
+    }),
+    response: {
+      200: t.Object({
+        data: t.String({ default: 'f47ac10b-58cc-4372-a567-0e02b2c3d479' })
+      }),
+      401: t.Object({
+        error: t.String({ default: 'Email atau password salah' })
+      }),
+      500: t.Object({
+        error: t.String({ default: 'Internal Server Error' })
+      })
+    },
+    detail: {
+      summary: 'Login Pengguna',
+      tags: ['Users']
+    }
   })
   .get('/users/current', async ({ headers, set }) => {
     const authHeader = headers.authorization;
@@ -67,6 +97,31 @@ export const usersRoute = new Elysia({ prefix: '/api' })
       set.status = 500;
       return { error: 'Internal Server Error' };
     }
+  }, {
+    headers: t.Object({
+      authorization: t.String({ description: 'Format: Bearer <token>' })
+    }),
+    response: {
+      200: t.Object({
+        data: t.Object({
+          id: t.Number({ default: 1 }),
+          name: t.String({ default: 'John Doe' }),
+          email: t.String({ default: 'john@example.com' }),
+          created_at: t.Any({ default: '2026-06-10T02:40:00.000Z' })
+        })
+      }),
+      401: t.Object({
+        error: t.String({ default: 'Unauthorized' })
+      }),
+      500: t.Object({
+        error: t.String({ default: 'Internal Server Error' })
+      })
+    },
+    detail: {
+      summary: 'Dapatkan Pengguna Saat Ini',
+      tags: ['Users'],
+      security: [{ BearerAuth: [] }]
+    }
   })
   .delete('/users/logout', async ({ headers, set }) => {
     const authHeader = headers.authorization;
@@ -88,5 +143,24 @@ export const usersRoute = new Elysia({ prefix: '/api' })
       set.status = 500;
       return { error: 'Internal Server Error' };
     }
+  }, {
+    headers: t.Object({
+      authorization: t.String({ description: 'Format: Bearer <token>' })
+    }),
+    response: {
+      200: t.Object({
+        data: t.String({ default: 'OK' })
+      }),
+      401: t.Object({
+        error: t.String({ default: 'Unauthorized' })
+      }),
+      500: t.Object({
+        error: t.String({ default: 'Internal Server Error' })
+      })
+    },
+    detail: {
+      summary: 'Logout Pengguna',
+      tags: ['Users'],
+      security: [{ BearerAuth: [] }]
+    }
   });
-
