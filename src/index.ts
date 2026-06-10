@@ -23,13 +23,45 @@ export const app = new Elysia()
     }
   }))
   .use(usersRoute)
-  .get('/', () => ({ message: 'Welcome to Elysia + Drizzle + MySQL API!' }))
+  .get('/', () => ({ message: 'Welcome to Elysia + Drizzle + MySQL API!' }), {
+    response: {
+      200: t.Object({
+        message: t.String({ default: 'Welcome to Elysia + Drizzle + MySQL API!' })
+      })
+    },
+    detail: {
+      summary: 'Pesan Selamat Datang',
+      tags: ['General']
+    }
+  })
   .get('/users', async () => {
     try {
-      const allUsers = await db.select().from(users);
+      const allUsers = await db.select({
+        id: users.id,
+        name: users.name,
+        email: users.email,
+        createdAt: users.createdAt
+      }).from(users);
       return { success: true, data: allUsers };
     } catch (error: any) {
       return { success: false, error: error.message };
+    }
+  }, {
+    response: {
+      200: t.Object({
+        success: t.Boolean({ default: true }),
+        data: t.Optional(t.Array(t.Object({
+          id: t.Number({ default: 1 }),
+          name: t.String({ default: 'John Doe' }),
+          email: t.String({ default: 'john@example.com' }),
+          createdAt: t.Any({ default: '2026-06-10T02:40:00.000Z' })
+        }))),
+        error: t.Optional(t.String({ default: 'Error message' }))
+      })
+    },
+    detail: {
+      summary: 'Dapatkan Semua Pengguna (Tanpa Sesi)',
+      tags: ['General']
     }
   });
 
@@ -39,4 +71,3 @@ if (process.env.NODE_ENV !== 'test') {
     `🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port}`
   );
 }
-
