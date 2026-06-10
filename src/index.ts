@@ -1,9 +1,27 @@
 import { Elysia, t } from 'elysia';
+import { swagger } from '@elysiajs/swagger';
 import { db } from './db/db';
 import { users } from './db/schema';
 import { usersRoute } from './routes/users-route';
 
 export const app = new Elysia()
+  .use(swagger({
+    documentation: {
+      info: {
+        title: 'Belajar Vibe Coding API',
+        version: '1.0.0',
+        description: 'Dokumentasi API interaktif untuk aplikasi Belajar Vibe Coding'
+      },
+      components: {
+        securitySchemes: {
+          BearerAuth: {
+            type: 'http',
+            scheme: 'bearer'
+          }
+        }
+      }
+    }
+  }))
   .use(usersRoute)
   .get('/', () => ({ message: 'Welcome to Elysia + Drizzle + MySQL API!' }))
   .get('/users', async () => {

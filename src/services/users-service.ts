@@ -85,7 +85,7 @@ export async function getCurrentUser(token: string) {
     throw new Error('Unauthorized');
   }
 
-  return result[0];
+  return result[0]!;
 }
 
 /**

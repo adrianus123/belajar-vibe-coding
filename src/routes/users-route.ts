@@ -17,10 +17,14 @@ export const usersRoute = new Elysia({ prefix: '/api' })
     }
   }, {
     body: t.Object({
-      name: t.String({ minLength: 1, maxLength: 255 }),
-      email: t.String({ format: 'email' }),
-      password: t.String({ minLength: 6 })
-    })
+      name: t.String({ minLength: 1, maxLength: 255, default: 'John Doe' }),
+      email: t.String({ format: 'email', default: 'john@example.com' }),
+      password: t.String({ minLength: 6, default: 'password123' })
+    }),
+    detail: {
+      summary: 'Registrasi Pengguna Baru',
+      tags: ['Users']
+    }
   })
   .post('/users/login', async ({ body, set }) => {
     try {
@@ -36,9 +40,13 @@ export const usersRoute = new Elysia({ prefix: '/api' })
     }
   }, {
     body: t.Object({
-      email: t.String({ format: 'email' }),
-      password: t.String({ minLength: 1 })
-    })
+      email: t.String({ format: 'email', default: 'john@example.com' }),
+      password: t.String({ minLength: 1, default: 'password123' })
+    }),
+    detail: {
+      summary: 'Login Pengguna',
+      tags: ['Users']
+    }
   })
   .get('/users/current', async ({ headers, set }) => {
     const authHeader = headers.authorization;
@@ -67,6 +75,15 @@ export const usersRoute = new Elysia({ prefix: '/api' })
       set.status = 500;
       return { error: 'Internal Server Error' };
     }
+  }, {
+    headers: t.Object({
+      authorization: t.String({ description: 'Format: Bearer <token>' })
+    }),
+    detail: {
+      summary: 'Dapatkan Pengguna Saat Ini',
+      tags: ['Users'],
+      security: [{ BearerAuth: [] }]
+    }
   })
   .delete('/users/logout', async ({ headers, set }) => {
     const authHeader = headers.authorization;
@@ -88,5 +105,13 @@ export const usersRoute = new Elysia({ prefix: '/api' })
       set.status = 500;
       return { error: 'Internal Server Error' };
     }
+  }, {
+    headers: t.Object({
+      authorization: t.String({ description: 'Format: Bearer <token>' })
+    }),
+    detail: {
+      summary: 'Logout Pengguna',
+      tags: ['Users'],
+      security: [{ BearerAuth: [] }]
+    }
   });
-
